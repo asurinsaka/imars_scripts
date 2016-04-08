@@ -3,6 +3,8 @@
 echo "This is created to organize the files generated from"
 echo "World View according to year and month- yyyy.mm"
 echo "Author: Asurin"
+echo
+echo
 
 # check the input has 2 params
 if [ "$#" -ne 2 ]; then
@@ -11,13 +13,18 @@ if [ "$#" -ne 2 ]; then
 fi
 
 if [ ! -d $1 ]; then
-	echo $1 " dose not exist!"
+	echo "Error:" $1 " dose not exist!"
 	exit
 fi
 
 
 if [ ! -d $2 ]; then
-	echo $2 " dose not exist!"
+	echo "Error:" $2 " dose not exist!"
+	exit
+fi
+
+if [ ! -w $2 ]; then
+	echo "Error: You do not have write permission on" $2"!"
 	exit
 fi
 
