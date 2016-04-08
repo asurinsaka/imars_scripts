@@ -45,42 +45,18 @@ count=0
 convert_month()
 {
 	case $1 in
-	'JAN')
-	month=01
-	;;
-	'FEB')
-	month=02
-	;;
-	'MAR')
-	month=03
-	;;
-	'APR')
-	month=04
-	;;
-	'MAY')
-	month=05
-	;;
-	'JUN')
-	month=06
-	;;
-	'JUL')
-	month=07
-	;;
-	'AUG')
-	month=08
-	;;
-	'SEP')
-	month=09
-	;;
-	'OCT')
-	month=10
-	;;
-	'NOV')
-	month=11
-	;;
-	'DEC')
-	month=12
-	;;
+	'JAN') month=01 ;;
+	'FEB') month=02 ;;
+	'MAR') month=03 ;;
+	'APR') month=04 ;;
+	'MAY') month=05 ;;
+	'JUN') month=06 ;;
+	'JUL') month=07 ;;
+	'AUG') month=08 ;;
+	'SEP') month=09 ;;
+	'OCT') month=10 ;;
+	'NOV') month=11 ;;
+	'DEC') month=12 ;;
 	esac
 }
 
