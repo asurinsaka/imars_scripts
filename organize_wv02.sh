@@ -12,14 +12,23 @@ if [ "$#" -ne 2 ]; then
 	exit
 fi
 
-if [ ! -d $1 ]; then
-	echo "Error:" $1 " dose not exist!"
+if [ ! -e $1 ]; then
+	echo "Error:" $1 "dose not exist!"
 	exit
 fi
 
+if [ ! -d $1 ]; then
+	echo "Error:" $1 "is not a directory!"
+	exit
+fi
+
+if [ ! -e $2 ]; then
+	echo "Error:" $2 "dose not exist!"
+	exit
+fi
 
 if [ ! -d $2 ]; then
-	echo "Error:" $2 " dose not exist!"
+	echo "Error:" $2 "is not a directory!"
 	exit
 fi
 
