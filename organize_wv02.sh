@@ -75,10 +75,10 @@ do
 	file=${file##*/}
 	
 	# get the make sure the file has the correct prefix
-	sat=$( echo $file | cut -c1-4 )
+	sat=${file:0:4}
 	if [ $sat == 'WV02' ]; then
-		year="20"$( echo $file | cut -c6-7 )
-		month=$( echo $file | cut -c8-10 )
+		year="20"${file:5:2}
+		month=${file:7:3}
 		convert_month $month
 		folder=$( echo $year'.'$month )
 		if [ ! -d $2/$folder ]; then
