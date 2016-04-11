@@ -104,7 +104,7 @@ class PngGenerator:
         height = data.shape[0]
         width = data.shape[1]
 
-        slin, spix, elin, epix = self.getNewLimits(height, new_east, new_north, new_south, new_west, width)
+        slin, spix, elin, epix = self.getNewLimits(width, height, new_north, new_east, new_south, new_west)
 
         data = data[slin : elin , spix :epix ]#data[0:height - 1,]
 
@@ -206,6 +206,9 @@ if __name__ == '__main__':
 
     north=np.NaN
     east=np.NaN
+    south=np.NaN
+    west=np.NaN
+
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
