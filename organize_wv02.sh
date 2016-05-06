@@ -2,39 +2,24 @@
 
 echo "This is created to organize the files generated from"
 echo "World View according to year and month- yyyy.mm"
-echo "Author: Asurin"
-echo
-echo
+echo "Author: Asurin, Gaby"
+echo "version: 1.1"
 
 # check the input has 2 params
 if [ "$#" -ne 2 ]; then
-	echo "Usage: $0 source_dir destination_dir"
-	exit
-fi
-
-if [ ! -e $1 ]; then
-	echo "Error:" $1 "dose not exist!"
-	exit
+        echo "Usage: $0 source_dir destination_dir"
+        exit
 fi
 
 if [ ! -d $1 ]; then
-	echo "Error:" $1 "is not a directory!"
-	exit
+        echo $1 " dose not exist!"
+        exit
 fi
 
-if [ ! -e $2 ]; then
-	echo "Error:" $2 "dose not exist!"
-	exit
-fi
 
 if [ ! -d $2 ]; then
-	echo "Error:" $2 "is not a directory!"
-	exit
-fi
-
-if [ ! -w $2 ]; then
-	echo "Error: You do not have write permission on" $2"!"
-	exit
+        echo $2 " dose not exist!"
+        exit
 fi
 
 
@@ -44,49 +29,65 @@ count=0
 # convert the month from literal to number
 convert_month()
 {
-	case $1 in
-	'JAN') month=01 ;;
-	'FEB') month=02 ;;
-	'MAR') month=03 ;;
-	'APR') month=04 ;;
-	'MAY') month=05 ;;
-	'JUN') month=06 ;;
-	'JUL') month=07 ;;
-	'AUG') month=08 ;;
-	'SEP') month=09 ;;
-	'OCT') month=10 ;;
-	'NOV') month=11 ;;
-	'DEC') month=12 ;;
-	esac
+        case $1 in
+        'JAN') month=01 ;;
+        'FEB') month=02 ;;
+        'MAR') month=03 ;;
+        'APR') month=04 ;;
+        'MAY') month=05 ;;
+        'JUN') month=06 ;;
+        'JUL') month=07 ;;
+        'AUG') month=08 ;;
+        'SEP') month=09 ;;
+        'OCT') month=10 ;;
+        'NOV') month=11 ;;
+        'DEC') month=12 ;;
+        esac
 }
 
+# get all the files in subdirectories
+files=$( find $1 )
 
-for file in $1/*
+for file in $files
 do
-	# get the file base name
-	file=${file##*/}
-	
-	# get the make sure the file has the correct prefix
-	sat=${file:0:4}
-	if [ $sat == 'WV02' ]; then
-		year="20"${file:5:2}
-		month=${file:7:3}
-		convert_month $month
-		folder=$( echo $year'.'$month )
-		if [ ! -d $2/$folder ]; then
-			mkdir -v $2/$folder
-		fi
-		cp $1/$file $2/$folder/
-	else
-		if [ ! -d $2/extra ]; then
-			mkdir -v $2/extra
-		fi
-		cp $1/$file $2/extra/
 
-	fi
-	
-	count=$(($count+1))
+        if [ -d $file ] ; then
+                continue
+        fi
+        # get the file base name
+        filename=${file##*/}
+
+        # get the make sure the file has the correct prefix
+        sat=${filename:0:4}
+        if (( $sat == 'WV02' || $sat == 'WV03' ))
+        then
+                # I found two different name schema and match them with
+                # this if
+                if [ ${filename:5:2} -gt 18 ] ; then
+                        year=${filename:5:4}
+                        month=${filename:9:2}
+                else
+                        year="20"${filename:5:2}
+                        month=${filename:7:3}
+                        convert_month $month
+                fi
+                folder=$( echo $year'.'$month )
+                if [ ! -d $2/$sat/$folder ]; then
+                        mkdir -v -p $2/$sat/$folder
+                fi
+                # touch is used for test the creation of folders
+                # touch $2/$sat/$folder/$filename
+                rsync --remove-source-files $file $2/$sat/$folder/
+#               rsync $1/$file $2/$folder/
+        else
+                if [ ! -d $2/extra ]; then
+                        mkdir -v $2/extra
+                fi
+                cp $file $2/extra/
+
+        fi
+
+        count=$(($count+1))
 done
 
 echo $count
-
