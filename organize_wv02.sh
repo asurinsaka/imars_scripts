@@ -5,6 +5,9 @@ echo "World View according to year and month- yyyy.mm"
 echo "Author: Asurin, Gaby"
 echo "version: 1.1"
 
+# how many process
+parallel=10
+
 # check the input has 2 params
 if [ "$#" -ne 2 ]; then
         echo "Usage: $0 source_dir destination_dir"
@@ -87,7 +90,7 @@ do
         fi
 
         count=$(($count+1))
-        if (( $count%10 == 0 ))
+        if (( $count%$parallel == 0 ))
         then
                 wait
         fi
