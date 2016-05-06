@@ -76,7 +76,7 @@ do
                 fi
                 # touch is used for test the creation of folders
                 # touch $2/$sat/$folder/$filename
-                rsync --remove-source-files $file $2/$sat/$folder/
+                rsync --remove-source-files $file $2/$sat/$folder/ &
 #               rsync $1/$file $2/$folder/
         else
                 if [ ! -d $2/extra ]; then
@@ -87,6 +87,10 @@ do
         fi
 
         count=$(($count+1))
+        if (( $count%10 == 0 ))
+        then
+                wait
+        fi
         echo -ne "\r$count"
 done
 
