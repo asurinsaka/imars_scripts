@@ -46,21 +46,19 @@ convert_month()
 }
 
 # get all the files in subdirectories
-files=$( find $1 )
+#files=$( find $1 -type f -iname '*' )
 
-for file in $files
+#for file in "$(find $1 -type f -iname '*')"
+find $1 -type f -print0 | while IFS= read -r -d '' file;
 do
 
-        if [ -d $file ] ; then
-                continue
-        fi
         # get the file base name
         filename=${file##*/}
 
         # get the make sure the file has the correct prefix
         sat=${filename:0:4}
-        if (( $sat == 'WV02' || $sat == 'WV03' ))
-        then
+        #echo $sat
+        if [ "$sat" == 'WV02' -o "$sat" == 'WV03' ] ; then
                 # I found two different name schema and match them with
                 # this if
                 if [ ${filename:5:2} -gt 18 ] ; then
@@ -73,6 +71,7 @@ do
                 fi
                 folder=$( echo $year'.'$month )
                 if [ ! -d $2/$sat/$folder ]; then
+                        echo -ne "\r"
                         mkdir -v -p $2/$sat/$folder
                 fi
                 # touch is used for test the creation of folders
@@ -83,11 +82,12 @@ do
                 if [ ! -d $2/extra ]; then
                         mkdir -v $2/extra
                 fi
-                cp $file $2/extra/
+                cp "$file" $2/extra/
 
         fi
 
         count=$(($count+1))
+        echo -ne "\r$count"
 done
 
-echo $count
+echo " total copied and moved."
