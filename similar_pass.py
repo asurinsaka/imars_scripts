@@ -47,6 +47,7 @@ final products from NASA'''
         parser.error("Wrong number of arguments")
 
 
+    # find write the output file
     if options.filename:
         if os.path.exists(options.filename):
             print "The file "+options.filename+" already exist!"
@@ -56,13 +57,13 @@ final products from NASA'''
         output_file = open(options.filename, 'w')
 
 
-
+    # make sure the directory is correct
     if not os.path.isdir(root_dir):
         print "The directory " + root_dir + " does not exists!"
         sys.exit(1)
 
 
-
+    # find  files in the each subdirectories and compare their names
     for root, dirs, files in os.walk(root_dir):
         if len(files)>1:
             files = [ x for x in files if options.extension in x ]
