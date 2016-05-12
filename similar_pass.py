@@ -28,7 +28,7 @@ final products from NASA'''
 
     parser = OptionParser(usage=usage, version=version)
 
-    parser.add_option("-q", "--quiet", action="store_false", dest="verbose",
+    parser.add_option("-q", "--quiet", action="store_false", dest="verbose", default=True,
                         help="Little Miss Chatterbox...")
     parser.add_option("-f", "--file", action="store", type="string", dest="filename",
                       help ="Save the output to a file")
@@ -51,7 +51,7 @@ final products from NASA'''
                 sys.exit(1)
         output_file = open(options.filename, 'w')
 
-    verbose = True if not options.verbose else options.verbose
+
 
     if not os.path.isdir(root_dir):
         print "The directory " + root_dir + " does not exists!"
@@ -75,7 +75,7 @@ final products from NASA'''
                     if timeb - timea == timedelta(seconds=300) and compare(root, files[i], files[i+1], options.compare):
                         if options.filename:
                             output_file.write(root+'/'+files[i]+'\n')
-                        if verbose:
+                        if options.verbose:
                             print root+'/'+files[i]
 
     if options.filename:
