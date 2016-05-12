@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Author: Asurin
+
 
 import sys
 import os
@@ -18,12 +20,12 @@ def compare(root, filea, fileb, do_compare):
 if __name__ == "__main__":
 
 
-    print '''This is a python script to find similar pass from
+    print '''This is a python script to find similar passes of
 final products from NASA'''
-
+    print '\n'
 
     # Read commandLine options...
-    version = "%prog 0.1"
+    version = "%prog 0.2"
     usage = '''usage: %prog [options] /dir'''
 
     parser = OptionParser(usage=usage, version=version)
@@ -34,6 +36,8 @@ final products from NASA'''
                       help ="Save the output to a file")
     parser.add_option("-c", "--compare", action="store_true", dest="compare",
                       help ="Check to see if files are the same")
+    parser.add_option("-e", "--extention", action="store", dest="extension", default="png",
+                      help ="check files with this extension only, default=png")
 
     (options, args) = parser.parse_args()
 
@@ -61,7 +65,7 @@ final products from NASA'''
 
     for root, dirs, files in os.walk(root_dir):
         if len(files)>1:
-            files = [ x for x in files if "hdf" not in x ]
+            files = [ x for x in files if options.extension in x ]
             files.sort()
             for i in range(len(files)-1):
                 filea = files[i].split('.')
@@ -74,9 +78,9 @@ final products from NASA'''
                                      fileb[2][:2], fileb[2][2:]]))
                     if timeb - timea == timedelta(seconds=300) and compare(root, files[i], files[i+1], options.compare):
                         if options.filename:
-                            output_file.write(root+'/'+files[i]+'\n')
+                            output_file.write(root+'/'+files[i+1]+'\n')
                         if options.verbose:
-                            print root+'/'+files[i]
+                            print root+'/'+files[i+1]
 
     if options.filename:
         output_file.close()
