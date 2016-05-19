@@ -1,0 +1,66 @@
+#!/usr/bin/python
+
+#monitoring the ipopp processes
+
+import datetime, os, sys, re
+from datetime import timedelta
+import subprocess
+import fileinput
+import traceback
+import commands
+
+format= "%Y-%m-%d %H:%M:%S.%f"
+ipopp_dir = '/home/ipopp'
+acts = ipopp_dir + '/drl/ncs/configs/default_config.file'
+dir = ipopp_dir + '/drl/ncs/stations/sta_name/station.stationlog'
+service = ipopp_dir + '/drl/tools/services.sh'
+
+# get ipopp station status
+station_status = commands.getoutput(service+' status')
+for line in station_status.split('\n'):
+    if 'not' in line:
+        status = "IPOPP CRITICAL"
+        print status + ": %s hanged" % line.split()[3]
+        sys.exit(2)
+
+
+
+#lining up the stations
+hanged_stations=""
+try:
+    for line in fileinput.input(acts):
+        station = line.strip()
+        if station.find('#')==-1 and station:
+            station_status = subprocess.Popen([ipopp_dir + '/drl/ncs/stations/' + station + '/jsw/bin/wrapper.sh', 'status'], stdout=subprocess.PIPE).communicate()[0]
+            # construct the path of station log file
+            pattern = re.compile(r"sta_name")
+            log_dir = pattern.sub(station, dir)
+            # read the last line of the log file
+            last_line = file(log_dir, "r").readlines()[-2]
+
+            # Take the time on the last line of station log
+            # compare it to 1 hours before current time
+            current = datetime.datetime.now()
+            cutofft = current - timedelta(hours=1)
+
+            cutofft_extreme = cutofft - timedelta(hours=12)
+
+            if re.search("UTC, ", last_line) :
+                words = last_line.split(" UTC, ")
+                logt =datetime.datetime.strptime(words[0], "%Y-%m-%d %H:%M:%S.%f")
+                # If the log time is more 1 hours earlier
+                if (logt < cutofft and not re.search("Reserving product", last_line) ) or station_status.find("not running") != -1 or (logt < cutofft_extreme):
+                    hanged_stations = hanged_stations + " " +  station
+
+    if (hanged_stations != ""):
+       status = "IPOPP CRITICAL"
+       print status + ": %s hanged" % hanged_stations
+       sys.exit(2)
+except:
+    e = sys.exc_info()
+    print "WARNING: %s" % str(e)
+    traceback.print_exc()
+    sys.exit(1)
+
+print "OK: All Good!"
+sys.exit(0)
