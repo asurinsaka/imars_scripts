@@ -17,11 +17,15 @@ service = ipopp_dir + '/drl/tools/services.sh'
 
 # get ipopp station status
 station_status = commands.getoutput(service+' status')
+hanged_stations = ''
 for line in station_status.split('\n'):
     if 'not' in line:
-        status = "IPOPP CRITICAL"
-        print status + ": %s hanged" % line.split()[3]
-        sys.exit(2)
+        hanged_stations += " " + line.split()[3]
+if hanged_stations != '':
+    status = "IPOPP CRITICAL"
+    print status + ": %s hanged" % hanged_stations
+    print hanged_stations
+    sys.exit(2)
 
 
 
