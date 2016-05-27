@@ -9,3 +9,7 @@ The source file are generated from satalite world view 2.
 
 
 ## cutter.sh
+
+## check_ipopp & check_products
+
+Script for nagios to check ipopp stations and check the final products published on the imars website.
