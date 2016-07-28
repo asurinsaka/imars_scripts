@@ -39,6 +39,8 @@ final products from NASA'''
                       help ="Check to see if files are the same")
     parser.add_option("-e", "--extention", action="store", dest="extension", default="png",
                       help ="check files with this extension only, default=png")
+    parser.add_option("-t", "--time", action="store", dest="time", default=1000,
+                      help ="check pass time intervals between(in seconds), default=1000")
 
     (options, args) = parser.parse_args()
 
@@ -78,7 +80,7 @@ final products from NASA'''
                                      filea[2][:2], filea[2][2:]]))
                     timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
                                      fileb[2][:2], fileb[2][2:]]))
-                    if timeb - timea == timedelta(seconds<=1000) and compare(root, files[i], files[i+1], options.compare):
+                    if timeb - timea == timedelta(seconds<=options.time) and compare(root, files[i], files[i+1], options.compare):
                         if options.filename:
                             output_file.write(root+'/'+files[i+1]+'\n')
                         if options.verbose:
