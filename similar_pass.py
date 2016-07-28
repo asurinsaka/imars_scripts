@@ -78,7 +78,7 @@ final products from NASA'''
                                      filea[2][:2], filea[2][2:]]))
                     timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
                                      fileb[2][:2], fileb[2][2:]]))
-                    if timeb - timea == timedelta(seconds=300) and compare(root, files[i], files[i+1], options.compare):
+                    if timeb - timea == timedelta(seconds<=1000) and compare(root, files[i], files[i+1], options.compare):
                         if options.filename:
                             output_file.write(root+'/'+files[i+1]+'\n')
                         if options.verbose:
