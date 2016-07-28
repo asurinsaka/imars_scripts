@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # Author: Asurin
 
+# This script is used to find passes with 5 minutes intervals and have same content.
 
 import sys
 import os
