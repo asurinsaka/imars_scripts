@@ -13,3 +13,7 @@ The source file are generated from satalite world view 2.
 ## check_ipopp & check_products
 
 Script for nagios to check ipopp stations and check the final products published on the imars website.
+
+## Similar_pass.py
+
+Find passes with 5 min intervals, and can check whether they are exaclty the same. 
