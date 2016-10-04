@@ -7,6 +7,9 @@ This is a small script to copy all files in one folder with format similar to WV
 
 The source file are generated from satalite world view 2.
 
+## cp_files.sh
+This is the script for matt to extract files from WV02 according to a file with a list of file names.
+
 
 ## cutter.sh
 
