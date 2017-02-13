@@ -44,6 +44,7 @@ final products from NASA'''
 
     (options, args) = parser.parse_args()
 
+    # print options.time
     if len(args) == 1:
         root_dir = args[0]
     else:
@@ -71,6 +72,7 @@ final products from NASA'''
         if len(files)>1:
             files = [ x for x in files if options.extension in x ]
             files.sort()
+            # print files
             for i in range(len(files)-1):
                 filea = files[i].split('.')
                 fileb = files[i+1].split('.')
@@ -80,7 +82,8 @@ final products from NASA'''
                                      filea[2][:2], filea[2][2:]]))
                     timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
                                      fileb[2][:2], fileb[2][2:]]))
-                    if timeb - timea == timedelta(seconds<=options.time) and compare(root, files[i], files[i+1], options.compare):
+                    print "if",files[i],files[i+1],timeb, timea, timeb - timea <= timedelta(seconds=options.time)
+                    if timeb - timea <= timedelta(seconds=options.time) and compare(root, files[i], files[i+1], options.compare):
                         if options.filename:
                             output_file.write(root+'/'+files[i+1]+'\n')
                         if options.verbose:
