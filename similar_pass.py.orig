@@ -68,6 +68,25 @@ final products from NASA'''
     for root, dirs, files in os.walk(root_dir):
         if len(files)>1:
             files = [ x for x in files if options.extension in x ]
+<<<<<<< HEAD
+            files.sort()
+            # print files
+            for i in range(len(files)-1):
+                filea = files[i].split('.')
+                fileb = files[i+1].split('.')
+                if filea[0] == fileb[0] and filea[3] == fileb[3] and \
+                    filea[4] == fileb[4] and filea[5] == fileb[5]:
+                    timea = datetime(*map(int, [filea[1][:4], filea[1][4:6], filea[1][6:],
+                                     filea[2][:2], filea[2][2:]]))
+                    timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
+                                     fileb[2][:2], fileb[2][2:]]))
+                    print "if",files[i],files[i+1],timeb, timea, timeb - timea <= timedelta(seconds=options.time)
+                    if timeb - timea <= timedelta(seconds=options.time) and compare(root, files[i], files[i+1], options.compare):
+                        if options.filename:
+                            output_file.write(root+'/'+files[i+1]+'\n')
+                        if options.verbose:
+                            print root+'/'+files[i+1]
+=======
             # for file in files:
             #     print file
             product_types = set([x.split('.')[4] for x in files])
@@ -90,6 +109,7 @@ final products from NASA'''
                                 output_file.write(root+'/'+files[i+1]+'\n')
                             if options.verbose:
                                 print root+'/'+files[i+1]
+>>>>>>> b6d959371cf9d2fb8f517f30ce4c8233adbcee93
 
     if options.filename:
         output_file.close()
