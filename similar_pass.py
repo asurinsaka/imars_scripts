@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # Author: Asurin
 
-# This script is used to find passes with 5 minutes intervals and have same content.
 
 import sys
 import os
@@ -26,7 +25,7 @@ final products from NASA'''
     print '\n'
 
     # Read commandLine options...
-    version = "%prog 0.2"
+    version = "%prog 0.3"
     usage = '''usage: %prog [options] /dir'''
 
     parser = OptionParser(usage=usage, version=version)
@@ -39,8 +38,6 @@ final products from NASA'''
                       help ="Check to see if files are the same")
     parser.add_option("-e", "--extention", action="store", dest="extension", default="png",
                       help ="check files with this extension only, default=png")
-    parser.add_option("-t", "--time", action="store", dest="time", default=1000,
-                      help ="check pass time intervals between(in seconds), default=1000")
 
     (options, args) = parser.parse_args()
 
@@ -54,7 +51,7 @@ final products from NASA'''
     # find write the output file
     if options.filename:
         if os.path.exists(options.filename):
-            print "The file "+options.filename+" already exist!"
+            print "The file "+options.filename+" already exists!"
             var = raw_input("Overwrite?(y/N)")
             if var != "y":
                 sys.exit(1)
@@ -71,23 +68,29 @@ final products from NASA'''
     for root, dirs, files in os.walk(root_dir):
         if len(files)>1:
             files = [ x for x in files if options.extension in x ]
-            files.sort()
-            # print files
-            for i in range(len(files)-1):
-                filea = files[i].split('.')
-                fileb = files[i+1].split('.')
-                if filea[0] == fileb[0] and filea[3] == fileb[3] and \
-                    filea[4] == fileb[4] and filea[5] == fileb[5]:
-                    timea = datetime(*map(int, [filea[1][:4], filea[1][4:6], filea[1][6:],
-                                     filea[2][:2], filea[2][2:]]))
-                    timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
-                                     fileb[2][:2], fileb[2][2:]]))
-                    print "if",files[i],files[i+1],timeb, timea, timeb - timea <= timedelta(seconds=options.time)
-                    if timeb - timea <= timedelta(seconds=options.time) and compare(root, files[i], files[i+1], options.compare):
-                        if options.filename:
-                            output_file.write(root+'/'+files[i+1]+'\n')
-                        if options.verbose:
-                            print root+'/'+files[i+1]
+            # for file in files:
+            #     print file
+            product_types = set([x.split('.')[4] for x in files])
+            products_list = []
+            for product_type in product_types:
+                products_list.append(sorted([file for file in files if product_type in file]))
+
+            for files in products_list:
+                for i in range(len(files)-1):
+                    filea = files[i].split('.')
+                    fileb = files[i+1].split('.')
+                    if filea[0] == fileb[0] and filea[3] == fileb[3] and \
+                        filea[4] == fileb[4] and filea[5] == fileb[5]:
+                        timea = datetime(*map(int, [filea[1][:4], filea[1][4:6], filea[1][6:],
+                                         filea[2][:2], filea[2][2:]]))
+                        timeb = datetime(*map(int, [fileb[1][:4], fileb[1][4:6], fileb[1][6:],
+                                         fileb[2][:2], fileb[2][2:]]))
+                        if timeb - timea == timedelta(seconds=300) and compare(root, files[i], files[i+1], options.compare):
+                            if options.filename:
+                                output_file.write(root+'/'+files[i+1]+'\n')
+                            if options.verbose:
+                                print root+'/'+files[i+1]
+>>>>>>> b6d959371cf9d2fb8f517f30ce4c8233adbcee93
 
     if options.filename:
         output_file.close()
