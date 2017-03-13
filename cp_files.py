@@ -49,7 +49,8 @@ if __name__ == "__main__":
         with open(input_file, 'r') as f:
             filenames=f.read().splitlines()
         f.closed
-        filenames.remove('')
+        if '' in filenames:
+            filenames.remove('')
         name_total = len(filenames)
     #print filenames
 
