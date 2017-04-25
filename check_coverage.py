@@ -5,8 +5,7 @@ import getopt
 import os
 import subprocess
 import h5py
-import numpy as np
-import multiprocessing
+
 
 class CheckCoverage:
     coords = []
@@ -18,7 +17,6 @@ class CheckCoverage:
     south = -90
     east = 180
     west = -180
-    covered = False
 
     def __init__(self, north=90, south=-90, east=180, west=-180, lat_name=None, lon_name=None):
         if (lat_name != None):
@@ -31,76 +29,16 @@ class CheckCoverage:
         self.west = west
 
     def check(self, ifile):
-        # does executable exist?
-        mimecmd = ['file', '--brief', ifile]
-        mime = subprocess.Popen(mimecmd, stdout=subprocess.PIPE).communicate()[0]
-
-        if re.search('Hierarchical.*version.5', mime):
-            self.check_hdf5(ifile)
-        else:
-            self.check_hdf4(ifile)
-
-    def check_hdf5(self, ifile):
-        lats = self.get_hdf5_array(ifile, self.lat_name)
-        lons = self.get_hdf5_array(ifile, self.lon_name)
-        if not self.check_line_limits(lats, lons):
-            return self.covered
-
-        pool = multiprocessing.Pool(10)
-
-        def check_line(self, lons, lats):
-            if not self.check_line_limits(lons, lats):
-                pass
-            else:
-                if self.check_points(lons, lats):
-                    self.covered = True
-                    pool.terminate()
-            return self.covered
-
-        for i in range(len(lats)):
-            pool.apply_async(check_line,(lons[i], lats[i]))
-        pool.close()
-
-        pool.join()
-        return self.covered
-
-
-
-    # check the limits of the array
-    def check_line_limits(self, lons, lats):
-        #asurin 011017: adding those lines to remove negtive result fast
-        max_lons = np.amax(lons)
-        min_lons = np.amin(lons)
-        max_lats = np.amax(lats)
-        min_lats = np.amin(lats)
-        if max_lons < self.west or min_lons > self.east or max_lats < self.south or min_lats > self.north:
-            return False
-        else:
-            return True
-
-    def check_points(self, lons, lats):
-        for x in zip(lons, lats):
-            if self.west <= x[0] <= self.east and self.south <= x[1] <= self.north:
-                return True
-            else:
-                return False
-
-    def get_hdf5_array(self, ifile, array_name):
-        data = h5py.File(ifile, 'r')
-        for name in array_name.split("/"):
-            if name != '':
-                data = data[name]
-        return data
-
-    def check_hdf4(self, ifile):
         lats = [float(x) for x in self.get_data_array(ifile, self.lat_name)]
         lons = [float(x) for x in self.get_data_array(ifile, self.lon_name)]
         coords = zip(lons, lats)
 
-        if not self.check_line_limits(lons, lats):
-            return False
-
         covered = False
+
+        #asurin 011017: adding those 2 lines to remove negtive result fast
+        if max(lons) < self.west or min(lons) > self.east or max(lats) < self.south or min(lats) > self.north:
+            return covered
+
         for x in coords:
             if self.west <= x[0] <= self.east and self.south <= x[1] <= self.north:
                 covered = True
@@ -126,13 +64,19 @@ class CheckCoverage:
             contents = f.read()
 
             return contents.split()
-        # Asurin: removed here
-        # elif re.search('Hierarchical.*version.5', mime):
-        #     data = h5py.File(ifile, 'r')
-        #     for name in array_name.split("/"):
-        #         if name != '':
-        #             data = data[name]
-        #     return data.value.reshape(data.maxshape[0] * data.maxshape[1])
+        elif re.search('Hierarchical.*version.5', mime):
+            data = h5py.File(ifile, 'r')
+            for name in array_name.split("/"):
+                if name != '':
+                    data = data[name]
+            return data.value.reshape(data.maxshape[0] * data.maxshape[1])
+        # Asurin: 042517 this part is for viirs GMTCO file
+        elif re.search('data', mime):
+            data = h5py.File(ifile, 'r')
+            for name in array_name.split("/"):
+                if name != '':
+                    data = data[name]
+            return data.value.reshape(data.shape[0] * data.shape[1])
         elif re.search('NetCDF Data Format', mime):
             ncdump_hdf = os.path.join(os.getenv('LIB3_BIN'), 'ncdump_hdf')
             if not (os.path.isfile(ncdump_hdf) and os.access(ncdump_hdf, os.X_OK)):
@@ -188,4 +132,5 @@ if __name__ == "__main__":
     data_files = data_files_str.split(",")
     objCheckCoverage = CheckCoverage(north, south, east, west, lat_name, lon_name)
     print "needed_files=" + " ".join([f for f in data_files if os.path.isfile(f) and objCheckCoverage.check(f)])
+
 
