@@ -80,6 +80,8 @@ class cp_files():
 if __name__ == "__main__":
     print '''
     This is a python script to find and copy files from google drive with a list of file names.
+    It is using a google drive command line tool from:
+    https://github.com/prasmussen/gdrive#other
     '''
 
     # Read command line opotions..
